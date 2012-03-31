@@ -34,8 +34,15 @@
 			$value = General::sanitize($data['value']);
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', 'Optional'));
-			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
+			$newInput = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL));
+			
+			// $follow: part of name of the element followed.
+			$follow = trim($this->get('follow'));
+			// If $follow is set we add the attribute to the XMLElement.
+			if($follow != '') $newInput->setAttribute("follow", $follow);
 
+			$label->appendChild($newInput);
+			//if($follow != '') $label->appendChild(new XMLElement('p', 'Following field with id "'.$follow.'".'));
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
@@ -200,6 +207,8 @@
 			$fields['field_id'] = $id;
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 			$fields['auto_unique'] = ($this->get('auto_unique') ? $this->get('auto_unique') : 'no');
+			// Saving the follow value.
+			$fields['follow'] = ($this->get('follow') ? $this->get('follow') : '');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
@@ -217,6 +226,16 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
+
+			// Follow field when configurin the section field.
+			$divFollow = new XMLElement('div', NULL);
+			$labelFollow = Widget::Label();
+			$labelFollow->setValue("Follow field (id)");
+			$divFollow->appendChild($labelFollow);
+			$inputFollow = Widget::Input('fields['.$this->get('sortorder').'][follow]', ($this->get('follow') ? $this->get('follow') : ''), 'text');
+			$labelFollow->appendChild($inputFollow);
+			$wrapper->appendChild($divFollow);
+			$wrapper->appendChild(new XMLElement('p', 'With \'x\' the value will follow and slugify the contents of the field with \'name\' = \'fields[x]\'.', array('class' => 'help')));
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 

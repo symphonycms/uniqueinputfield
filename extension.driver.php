@@ -34,7 +34,7 @@
 		public function initFollow($context) {
 			$page = $context['parent']->Page;
 			
-            $page->addScriptToHead(URL . '/extensions/uniqueinputfield/js/follow.js', 3466702);
+            $page->addScriptToHead(URL . '/extensions/uniqueinputfield/assets/follow.js', 3466702);
 		}
 
 		public function uninstall(){

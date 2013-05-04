@@ -110,7 +110,7 @@
 					$existing = Symphony::Database()->fetchRow(0, "
 						SELECT `id`, `value`, `handle`
 						FROM `tbl_entries_data_" . $this->get('id') . "`
-						WHERE `value` = '".General::sanitize($data)."'
+						WHERE `value` = '".mysql_real_escape_string(General::sanitize($data))."'
 						AND `entry_id` = {$entry_id}
 						LIMIT 1
 					");
